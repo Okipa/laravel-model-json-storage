@@ -1,0 +1,39 @@
+{
+    "name": "okipa/laravel-model-json-storage",
+    "description": "It is sometimes a better option to store your model data in json (single line recording for example). With this package, store and access your model in json, as you would do it from database.",
+    "keywords": [
+        "okipa",
+        "laravel",
+        "model",
+        "json",
+        "storage"
+    ],
+    "homepage": "https://github.com/Okipa/laravel-model-json-storage",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Arthur LORENT",
+            "email": "arthur.lorent@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "laravel/framework": "~5.0"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Okipa\\LaravelModelJsonStorage\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Okipa\\LaravelModelJsonStorage\\ModelJsonStorageServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable"
+}
