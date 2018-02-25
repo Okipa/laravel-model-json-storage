@@ -32,7 +32,8 @@ class User extends Authenticatable
     [...]
 ```
 
-Then, in your controller for example, just manipulate your model normally.
+Then, in your controller for example, just manipulate your model normally.  
+After a storage, you will see a json file named with your model title in the path defined in the `model-json-storage` config file.
 
 ```php
 $user = app(User::class)->create([
