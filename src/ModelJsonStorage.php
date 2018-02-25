@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Carbon\Carbon;
 use File;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -14,78 +13,6 @@ trait ModelJsonStorage
     protected $whereIns = [];
     protected $whereNotIns = [];
     protected $orderBys = [];
-
-    /**
-     * @param array $columns
-     *
-     * @return Collection
-     */
-    public static function all($columns = []): Collection
-    {
-        return (new static)->getFromJson();
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getFromJson(): Collection
-    {
-        if (! $this->modelsFromJson) {
-            $this->loadJsonModels();
-        }
-
-        return $this->modelsFromJson;
-    }
-
-    /**
-     * @return void
-     */
-    protected function loadJsonModels(): void
-    {
-        // we get the raw json content
-        $modelsArray = $this->getRawArrayFromJson();
-        // we instantiate each object from its array
-        foreach ($modelsArray as $key => $modelArray) {
-            $modelsArray[$key] = app($this->getMorphClass())
-                ->setRawAttributes($modelArray)
-                ->makeVisible($this->getHidden());
-        }
-        // we set the modelsFromJson variable
-        $this->modelsFromJson = collect($modelsArray);
-    }
-
-    /**
-     * @return array
-     */
-    protected function getRawArrayFromJson(): array
-    {
-        // we get an array from the json content
-        $modelsArray = [];
-        if (file_exists($this->getJsonStoragePath())) {
-            $modelsArray = json_decode(File::get($this->getJsonStoragePath()), true);
-        }
-
-        return $modelsArray;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getJsonStoragePath(): string
-    {
-        // we get the model name
-        $modelName = str_slug(last(explode('\\', $this->getMorphClass())));
-        // we get the configured storage path
-        $configStoragePath = storage_path(config('model-json-storage.storage_path'));
-        // we create the path if it does not exists
-        if (! is_dir($configStoragePath)) {
-            mkdir($configStoragePath, 0777, true);
-        }
-        // we set the storage path
-        $storagePath = $configStoragePath . '/' . $modelName . '.json';
-
-        return $storagePath;
-    }
 
     /**
      * @param string     $column
@@ -120,19 +47,6 @@ trait ModelJsonStorage
 
     /**
      * @param string $column
-     * @param array  $values
-     *
-     * @return $this
-     */
-    public function whereNotIn(string $column, array $values)
-    {
-        $this->whereNotIns[] = compact('column', 'values');
-
-        return $this;
-    }
-
-    /**
-     * @param string $column
      * @param string $direction
      *
      * @return $this
@@ -157,27 +71,28 @@ trait ModelJsonStorage
     /**
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function saveToJson(): Model
+    protected function saveToJson(): Model
     {
-        if ($this->{$this->primaryKey}) {
-            // we set the timestamp fields
-            if ($this->timestamps) {
-                dd('update', $this);
-                $this->setTimestampFields(true);
-                // todo : update
-            }
+        if ($this->getAttribute($this->primaryKey)) {
+            $this->updateModel();
         } else {
-            // we set the model primary key value
-            $this->setModelPrimaryKeyValue();
-            // we set the timestamp fields
-            if ($this->timestamps) {
-                $this->setTimestampFields();
-            }
-            $models = $this->getFromJson()->push($this->makeVisible($this->getHidden()));
-            File::put($this->getJsonStoragePath(), $models->toJson());
+            $this->createModel();
         }
 
         return $this;
+    }
+
+    /**
+     * @return void
+     */
+    protected function updateModel(): void
+    {
+        if ($this->usesTimestamps()) {
+            $this->setTimestampFields(true);
+        }
+        $withoutCurrentModel = $this->whereNotIn($this->primaryKey, [$this->getAttribute($this->primaryKey)])->get();
+        $models = $withoutCurrentModel->push($this->makeVisible($this->getHidden()))->sortBy($this->primaryKey);
+        File::put($this->getJsonStoragePath(), $models->toJson());
     }
 
     /**
@@ -187,42 +102,11 @@ trait ModelJsonStorage
      */
     protected function setTimestampFields($update = false): void
     {
-        $now = Carbon::now()->toDateTimeString();
+        $now = $this->freshTimestampString();
         if (! $update) {
-            $this->created_at = $now;
+            $this->setCreatedAt($now);
         }
-        $this->updated_at = $now;
-    }
-
-    /**
-     * @return void
-     */
-    protected function setModelPrimaryKeyValue(): void
-    {
-        // we set the model primary key value according to the models already stored in the json file
-        $modelPrimaryKeyValue = 1;
-        if (! $this->getFromJson()->isEmpty()) {
-            $lastModelId = $this->getFromJson()->sortBy('id')->last()->getAttribute($this->primaryKey);
-            $modelPrimaryKeyValue = $lastModelId + 1;
-        }
-        // we add the primary key to the model attributes
-        $attributes = array_merge([$this->primaryKey => $modelPrimaryKeyValue], $this->getAttributes());
-        $this->setRawAttributes($attributes);
-    }
-
-    public function delete()
-    {
-        // todo : delete
-    }
-
-    /**
-     * @param string $column
-     *
-     * @return Collection
-     */
-    public function value(string $column): Collection
-    {
-        return $this->get()->pluck($column);
+        $this->setUpdatedAt($now);
     }
 
     /**
@@ -249,6 +133,152 @@ trait ModelJsonStorage
         }
 
         return $modelsCollection;
+    }
+
+    /**
+     * @param string $column
+     * @param array  $values
+     *
+     * @return $this
+     */
+    public function whereNotIn(string $column, array $values)
+    {
+        $this->whereNotIns[] = compact('column', 'values');
+
+        return $this;
+    }
+
+    /**
+     * @return void
+     */
+    protected function createModel(): void
+    {
+        $this->setModelPrimaryKeyValue();
+        if ($this->usesTimestamps()) {
+            $this->setTimestampFields();
+        }
+        $models = $this->all()->push($this->makeVisible($this->getHidden()));
+        File::put($this->getJsonStoragePath(), $models->toJson());
+    }
+
+    /**
+     * @return void
+     */
+    protected function setModelPrimaryKeyValue(): void
+    {
+        // we set the model primary key value according to the models already stored in the json file
+        $modelPrimaryKeyValue = 1;
+        if (! $this->getFromJson()->isEmpty()) {
+            $lastModelId = $this->getFromJson()->sortBy('id')->last()->getAttribute($this->primaryKey);
+            $modelPrimaryKeyValue = $lastModelId + 1;
+        }
+        // we add the primary key to the model attributes
+        $attributes = array_merge([$this->primaryKey => $modelPrimaryKeyValue], $this->getAttributes());
+        $this->setRawAttributes($attributes);
+    }
+
+    /**
+     * @param array $columns
+     *
+     * @return Collection
+     */
+    public static function all($columns = []): Collection
+    {
+        return (new static)->getFromJson();
+    }
+
+    /**
+     * @return Collection
+     */
+    protected function getFromJson(): Collection
+    {
+        if (! $this->modelsFromJson) {
+            $this->loadJsonModels();
+        }
+
+        return $this->modelsFromJson;
+    }
+
+    /**
+     * @return void
+     */
+    protected function loadJsonModels(): void
+    {
+        $modelsArray = $this->getRawArrayFromJson();
+        foreach ($modelsArray as $key => $modelArray) {
+            $modelsArray[$key] = app($this->getMorphClass())
+                ->setRawAttributes($modelArray)
+                ->makeVisible($this->getHidden());
+        }
+        $this->modelsFromJson = collect($modelsArray);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getRawArrayFromJson(): array
+    {
+        $modelsArray = [];
+        if (file_exists($this->getJsonStoragePath())) {
+            $modelsArray = $this->fromJson(File::get($this->getJsonStoragePath()));
+        }
+
+        return $modelsArray;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getJsonStoragePath(): string
+    {
+        $modelName = str_slug(last(explode('\\', $this->getMorphClass())));
+        $configStoragePath = storage_path(config('model-json-storage.storage_path'));
+        if (! is_dir($configStoragePath)) {
+            mkdir($configStoragePath, 0777, true);
+        }
+        $jsonStoragePath = $configStoragePath . '/' . $modelName . '.json';
+
+        return $jsonStoragePath;
+    }
+
+    /**
+     * @param array $attributes
+     * @param array $options
+     *
+     * @return mixed
+     */
+    public function update(array $attributes = [], array $options = [])
+    {
+        return $this->fill($attributes)->save($options);
+    }
+
+    /**
+     * @return bool
+     */
+    public function delete(): bool
+    {
+        $this->deleteModel();
+
+        return true;
+    }
+
+    /**
+     * @return void
+     */
+    protected function deleteModel(): void
+    {
+        $withoutCurrentModel = $this->whereNotIn($this->primaryKey, [$this->getAttribute($this->primaryKey)])->get();
+        File::put($this->getJsonStoragePath(), $withoutCurrentModel->toJson());
+    }
+
+    /**
+     * @param string $column
+     *
+     * @return Collection
+     */
+    public function value(string $column): Collection
+    {
+        return $this->get()->pluck($column);
     }
 
     /**
