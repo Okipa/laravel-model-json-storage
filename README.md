@@ -51,7 +51,7 @@ $model = app(User::class)->all();
 $model = app(User::class)->where('id', 1)->first();
 ```
 
-## Eloquent <=> Collection methods associations
+## Builder <=> Collection methods associations
 The `Illuminate\Database\Query\Builder` and the `Illuminate\Support\Collection` share some methods, which is quite convenient.  
 But as you will see, the name or the behaviour of these methods is not always exactly the same and some adaptations has been made to give you the opportunity to use the json-stored models methods almost as if you would manipulate and database-connected model.
 
