@@ -1,4 +1,4 @@
-# PACKAGE IN DEVELOPMENT (NOT STABLE YET)
+# PACKAGE IN DEVELOPMENT
 
 # laravel-model-json-storage
 It is sometimes a better option to store your models in a json file rather than in database (in case of a single line, or for a few line recordings).  
@@ -6,10 +6,10 @@ This package prevents you to create a table for a ridiculous amount of lines and
 With it, store and access to your models data from a json files as you would do it in database.
 
 ## Disclaimer
-Keep in mind that the data is always extracted from a json file and not from a database (as it is the purpose of this package).  
-As so, the whole json file is always read when you get access to your data (once but entirely read indeed).  
+Keep in mind that with this package use, the model data is always extracted from a json file and not from a database (as it is the purpose of this package).  
+As so, the whole json file is always read when you get access to your data (once, but entirely).  
 Please remember that :
-- You should not use this package if you have a lot of objects to store, it would cause performance issues rather than improve it.
+- You should not use this package if you have a lot of objects to store, it could cause performance issues rather than improve it.
 - This package enables you to manipulate models as if it they would been stored in database but it always uses the [Illuminate\Support\Collection methods](https://laravel.com/docs/5.6/collections) methods under the hood.
 
 ## Usage
