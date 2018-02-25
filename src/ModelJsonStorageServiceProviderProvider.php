@@ -2,7 +2,6 @@
 
 namespace Okipa\LaravelModelJsonStorage;
 
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
 class ModelJsonStorageServiceProviderProvider extends ServiceProvider
@@ -11,13 +10,13 @@ class ModelJsonStorageServiceProviderProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__ . '/../config/model-json-storage.ph' => config_path('model-json-storage.php'),
-        ], 'model_json_storage::config');
+        ], 'model-json-storage::config');
     }
 
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/model-json-storage.php', 'model_json_storage'
+            __DIR__ . '/../config/model-json-storage.php', 'model-json-storage'
         );
     }
 }

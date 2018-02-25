@@ -179,11 +179,6 @@ trait ModelJsonStorage
 
         return $this;
     }
-    
-    public function delete()
-    {
-        // todo : delete
-    }
 
     /**
      * @param bool $update
@@ -213,6 +208,11 @@ trait ModelJsonStorage
         // we add the primary key to the model attributes
         $attributes = array_merge([$this->primaryKey => $modelPrimaryKeyValue], $this->getAttributes());
         $this->setRawAttributes($attributes);
+    }
+
+    public function delete()
+    {
+        // todo : delete
     }
 
     /**
@@ -273,9 +273,9 @@ trait ModelJsonStorage
     /**
      * @param $column
      *
-     * @return Collection
+     * @return int
      */
-    public function max($column): Collection
+    public function max($column): int
     {
         return $this->get()->max($column);
     }
@@ -283,9 +283,9 @@ trait ModelJsonStorage
     /**
      * @param $column
      *
-     * @return Collection
+     * @return int
      */
-    public function min($column): Collection
+    public function min($column): int
     {
         return $this->get()->min($column);
     }
@@ -293,9 +293,9 @@ trait ModelJsonStorage
     /**
      * @param $column
      *
-     * @return Collection
+     * @return int
      */
-    public function avg($column): Collection
+    public function avg($column): int
     {
         return $this->get()->avg($column);
     }
@@ -305,7 +305,7 @@ trait ModelJsonStorage
      *
      * @return Collection
      */
-    public function distinct($column) : Collection
+    public function distinct($column): Collection
     {
         return $this->get()->unique($column);
     }
@@ -315,11 +315,11 @@ trait ModelJsonStorage
      *
      * @return Collection
      */
-    public function groupBy($column) : Collection
+    public function groupBy($column): Collection
     {
         return $this->get()->unique($column);
     }
-    
+
     public function select()
     {
         // Todo : not compatible
