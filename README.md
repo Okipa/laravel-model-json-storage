@@ -1,3 +1,5 @@
+# PACKAGE IN DEVELOPMENT (NOT STABLE YET)
+
 # laravel-model-json-storage
 It is sometimes a better option to store your models in a json file rather than in database (in case of a single line, or for a few line recordings).  
 This package prevents you to create a table for a ridiculous amount of lines and improves the data recovery performances.  
