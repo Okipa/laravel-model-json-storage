@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\LaravelModelJsonStorage;
 
 use File;
 use Illuminate\Database\Eloquent\Model;
