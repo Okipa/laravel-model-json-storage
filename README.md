@@ -42,7 +42,7 @@ First, add the `ModelJsonStorage` trait in your model.
 ```php
 class Test extends Authenticatable
 {
-    use ModelJsonStorage;
+    use Okipa\LaravelModelJsonStorage\ModelJsonStorage;
     
     [...]
 }

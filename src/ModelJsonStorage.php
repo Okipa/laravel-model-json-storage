@@ -1,6 +1,6 @@
 <?php
 
-namespace App\LaravelModelJsonStorage;
+namespace Okipa\LaravelModelJsonStorage;
 
 use File;
 use Illuminate\Database\Eloquent\Model;
@@ -8,6 +8,12 @@ use Illuminate\Support\Collection;
 
 trait ModelJsonStorage
 {
+    /**
+     * The primary key for the model.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id';
     protected $modelsFromJson;
     protected $wheres = [];
     protected $whereIns = [];
@@ -73,13 +79,13 @@ trait ModelJsonStorage
      */
     protected function saveToJson(): Model
     {
-        if ($this->getAttribute($this->primaryKey)) {
+        if ($this->{$this->primaryKey}) {
             $this->updateModel();
         } else {
             $this->createModel();
         }
 
-        return $this;
+        return $this->where($this->primaryKey, $this->{$this->primaryKey})->first();
     }
 
     /**
@@ -110,6 +116,26 @@ trait ModelJsonStorage
     }
 
     /**
+     * @return string
+     */
+    public abstract function freshTimestampString();
+
+    /**
+     * @return array
+     */
+    public abstract function getAttribute();
+
+    /**
+     * @return void
+     */
+    public abstract function setCreatedAt();
+
+    /**
+     * @return void
+     */
+    public abstract function setUpdatedAt();
+
+    /**
      * @return \Illuminate\Support\Collection
      */
     public function get(): Collection
@@ -133,58 +159,6 @@ trait ModelJsonStorage
         }
 
         return $modelsCollection;
-    }
-
-    /**
-     * @param string $column
-     * @param array  $values
-     *
-     * @return $this
-     */
-    public function whereNotIn(string $column, array $values)
-    {
-        $this->whereNotIns[] = compact('column', 'values');
-
-        return $this;
-    }
-
-    /**
-     * @return void
-     */
-    protected function createModel(): void
-    {
-        $this->setModelPrimaryKeyValue();
-        if ($this->usesTimestamps()) {
-            $this->setTimestampFields();
-        }
-        $models = $this->all()->push($this->makeVisible($this->getHidden()));
-        File::put($this->getJsonStoragePath(), $models->toJson());
-    }
-
-    /**
-     * @return void
-     */
-    protected function setModelPrimaryKeyValue(): void
-    {
-        // we set the model primary key value according to the models already stored in the json file
-        $modelPrimaryKeyValue = 1;
-        if (! $this->getFromJson()->isEmpty()) {
-            $lastModelId = $this->getFromJson()->sortBy('id')->last()->getAttribute($this->primaryKey);
-            $modelPrimaryKeyValue = $lastModelId + 1;
-        }
-        // we add the primary key to the model attributes
-        $attributes = array_merge([$this->primaryKey => $modelPrimaryKeyValue], $this->getAttributes());
-        $this->setRawAttributes($attributes);
-    }
-
-    /**
-     * @param array $columns
-     *
-     * @return Collection
-     */
-    public static function all($columns = []): Collection
-    {
-        return (new static)->getFromJson();
     }
 
     /**
@@ -242,6 +216,88 @@ trait ModelJsonStorage
     }
 
     /**
+     * @return string
+     */
+    public abstract function getMorphClass();
+
+    /**
+     * @return mixed
+     */
+    public abstract function fromJson();
+
+    /**
+     * @return array
+     */
+    public abstract function getHidden();
+
+    /**
+     * @param string $column
+     * @param array  $values
+     *
+     * @return $this
+     */
+    public function whereNotIn(string $column, array $values)
+    {
+        $this->whereNotIns[] = compact('column', 'values');
+
+        return $this;
+    }
+
+    /**
+     * @return Model
+     */
+    public abstract function makeVisible();
+
+    /**
+     * @return void
+     */
+    protected function createModel(): void
+    {
+        $this->setModelPrimaryKeyValue();
+        if ($this->usesTimestamps()) {
+            $this->setTimestampFields();
+        }
+        $models = $this->all()->push($this->makeVisible($this->getHidden()));
+        File::put($this->getJsonStoragePath(), $models->toJson());
+    }
+
+    /**
+     * @return void
+     */
+    protected function setModelPrimaryKeyValue(): void
+    {
+        // we set the model primary key value according to the models already stored in the json file
+        $modelPrimaryKeyValue = 1;
+        if (! $this->getFromJson()->isEmpty()) {
+            $lastModelId = $this->getFromJson()->sortBy('id')->last()->getAttribute($this->primaryKey);
+            $modelPrimaryKeyValue = $lastModelId + 1;
+        }
+        // we add the primary key to the model attributes
+        $attributes = array_merge([$this->primaryKey => $modelPrimaryKeyValue], $this->getAttributes());
+        $this->setRawAttributes($attributes);
+    }
+
+    /**
+     * @return Model
+     */
+    public abstract function getAttributes();
+
+    /**
+     * @return Model
+     */
+    public abstract function setRawAttributes();
+
+    /**
+     * @param array $columns
+     *
+     * @return Collection
+     */
+    public static function all($columns = []): Collection
+    {
+        return (new static)->getFromJson();
+    }
+
+    /**
      * @param array $attributes
      * @param array $options
      *
@@ -251,6 +307,11 @@ trait ModelJsonStorage
     {
         return $this->fill($attributes)->save($options);
     }
+
+    /**
+     * @return Model
+     */
+    public abstract function fill();
 
     /**
      * @return bool
