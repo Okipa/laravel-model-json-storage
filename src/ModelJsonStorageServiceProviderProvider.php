@@ -4,7 +4,7 @@ namespace Okipa\LaravelModelJsonStorage;
 
 use Illuminate\Support\ServiceProvider;
 
-class ModelJsonStorageServiceProviderProvider extends ServiceProvider
+class ModelJsonStorageServiceProvider extends ServiceProvider
 {
     public function boot()
     {
