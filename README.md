@@ -11,11 +11,11 @@ This package saves you to create a table for a ridiculous amount of lines, impro
 ------------------------------------------------------------------------------------------------------------------------
 
 ## To read before use
-Keep in mind that with this package, the stored models are always extracted from a json file and not from a database (the purpose of this package).  
-To do so, the json file is always entirely read when you access to your data.  
-Also :
-- You should not use this package if you have a lot of objects to store, it could cause performance issues rather than improve it.
-- All the Eloquent functionalities are not available (especially those which use database), this package has been made for simple use cases.
+Please keep in mind that :
+- The purpose of this package is to store your model instances in json.  
+- Consequently, the json file is always entirely read when you access to your data
+- Consequently, you should **NOT** use this package if you have a lot of instances to store, it could cause performance issues rather than improve it.
+- All the query-related and model-related functionalities are not available (especially those which use database), this package has been made for quite simple use cases.
 - This package enables you to manipulate models as if it they would been stored in database but it always uses the [Illuminate\Support\Collection methods](https://laravel.com/docs/5.6/collections) methods under the hood.
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -87,3 +87,296 @@ php artisan vendor:publish --tag=model-json-storage::config
 Then, open the published package configuration file (`config/model-json-storage.php`) and override the default configuration by setting your own values for the following items :
 - json storage path
 - ... that's all for now.
+
+------------------------------------------------------------------------------------------------------------------------
+
+## API
+The most used query-related and model-related methods have been overridden to allow you to use your json stored model as usual.  
+Retrieve the list of the available methods bellow.  
+However, if you want to add a method for your personal needs, do not hesitate to improve this package with a PR.
+
+### Overridden Illuminate\Database\Eloquent\Model methods
+
+#### save()
+```php
+/**
+ * Save the model to the json file.
+ *
+ * @param  array $options
+ *
+ * @return bool
+ */
+public function save(array $options = [])
+```
+
+#### update()
+```php
+/**
+ * Update the model in the json file.
+ *
+ * @param array $attributes
+ * @param array $options
+ *
+ * @return mixed
+ */
+public function update(array $attributes = [], array $options = [])
+```
+
+#### delete()
+```php
+/**
+ * Delete the model from the json file.
+ *
+ * @return bool|null
+ * @throws Exception
+ */
+public function delete()
+```
+
+#### all()
+```php
+/**
+ * Get all of the models from the json file.
+ *
+ * @param array $columns
+ *
+ * @return Collection
+ */
+public static function all($columns = ['*'])
+```
+
+### Illuminate\Database\Query\Builder
+
+#### select()
+```php
+/**
+* Set the column to be selected.
+* Collection method used under the hood : only() : https://laravel.com/docs/5.4/collections#method-only
+*
+* @param  string $column
+*
+* @return Model
+*/
+public function select(string $column)
+```
+
+#### addSelect()
+```php
+/**
+ * Add a new select column to the query.
+ * Collection method used under the hood : only() : https://laravel.com/docs/5.4/collections#method-only
+ *
+ * @param  string $column
+ *
+ * @return Model
+ */
+public function addSelect(string $column)
+```
+
+#### where()
+```php
+/**
+ * Add a basic where clause to the query.
+ * Collection method used under the hood : where() : https://laravel.com/docs/5.4/collections#method-where
+ *
+ * @param  string $column
+ * @param  string $operator
+ * @param  mixed  $value
+ *
+ * @return Model
+ */
+public function where(string $column, string $operator = null, mixed $value = null)
+```
+
+#### whereIn()
+```php
+/**
+ * Add a "where in" clause to the query.
+ * Collection method used under the hood : whereIn() : https://laravel.com/docs/5.4/collections#method-wherein
+ *
+ * @param string $column
+ * @param array  $values
+ *
+ * @return $this
+ */
+public function whereIn(string $column, array $values)
+```
+
+#### whereNotIn()
+```php
+/**
+ * Add a "where in" clause to the query.
+ * Collection method used under the hood : whereNotIn() : https://laravel.com/docs/5.4/collections#method-wherenotin
+ *
+ * @param string $column
+ * @param array  $values
+ *
+ * @return $this
+ */
+public function whereIn(string $column, array $values)
+```
+
+#### orderBy()
+```php
+/**
+ * Add an "order by" clause to the query.
+ * Collection method used under the hood : sortBy() : https://laravel.com/docs/5.4/collections#method-sortby
+ *
+ * @param  string $column
+ * @param  string $direction
+ *
+ * @return $this
+ */
+public function orderBy(string $column, string $direction = 'asc')
+```
+
+#### groupBy()
+```php
+/**
+ * Add a "group by" clause to the query.
+ * Collection method used under the hood : unique() : https://laravel.com/docs/5.4/collections#method-unique
+ *
+ * @param $column
+ *
+ * @return Collection
+ */
+public function groupBy($column)
+```
+
+#### distinct()
+```php
+/**
+ * Force the query to only return distinct results.
+ * Collection method used under the hood : unique() : https://laravel.com/docs/5.4/collections#method-unique
+ *
+ * @return Collection
+ */
+public function distinct(string $column)
+```
+
+#### get()
+```php
+/**
+ * Execute the query as a "select" statement.
+ *
+ * @param  array $columns
+ *
+ * @return Collection
+ */
+public function get(array $columns = ['*'])
+```
+
+#### find()
+```php
+/**
+ * Execute a query for a single record by ID.
+ *
+ * @param  int   $id
+ * @param  array $columns
+ *
+ * @return mixed|static
+ */
+public function find(int $id, array $columns = ['*'])
+```
+
+#### pluck()
+```php
+/**
+ * Get an array with the values of a given column.
+ *
+ * @param string $column
+ * @param string $key
+ *
+ * @return Collection
+ */
+public function pluck(string $column, string $key = null)
+```
+
+#### min()
+```php
+/**
+ * Retrieve the minimum value of a given column.
+ *
+ * @param $column
+ *
+ * @return int
+ */
+public function min(string $column)
+```
+
+#### max()
+```php
+/**
+ * Retrieve the maximum value of a given column.
+ *
+ * @param  string $column
+ *
+ * @return int
+ */
+public function max(string $column)
+```
+
+#### avg()
+```php
+/**
+ * Retrieve the average of the values of a given column.
+ *
+ * @param  string $column
+ *
+ * @return int
+ */
+public function avg(string $column)
+```
+
+#### count()
+```php
+/**
+ * Retrieve the "count" result of the query.
+ *
+ * @param  array $columns
+ *
+ * @return int
+ */
+public function count(array $columns = ['*'])
+```
+
+#### paginate()
+```php
+/**
+ * Paginate the given query.
+ *
+ * @param  int      $perPage
+ * @param  int|null $page
+ * @param array     $options
+ *
+ * @return LengthAwarePaginator
+ */
+public function paginate($perPage = null, $page = null, $options = [])
+```
+
+### Illuminate\Database\Concerns\BuildsQueries
+
+#### chunk()
+```php
+/**
+ * Chunk the results of the query.
+ *
+ * @param  int $count
+ *
+ * @return Collection
+ */
+public function chunk(int $count)
+```
+
+#### first()
+```php
+/**
+ * Execute the query and get the first result.
+ * Collection method used under the hood : first() : https://laravel.com/docs/5.4/collections#method-first
+ *
+ * @param  array $columns
+ *
+ * @return Model|null
+ */
+public function first(array $columns = ['*'])
+```
