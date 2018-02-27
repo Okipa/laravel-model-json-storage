@@ -10,6 +10,37 @@ use Illuminate\Support\Collection;
 trait QueryBuilderOverride
 {
     /**
+     * The "select" clauses of the query.
+     *
+     * @var array
+     */
+    protected $selects = [];
+    /**
+     * The "where" clauses of the query.
+     *
+     * @var array
+     */
+    protected $wheres = [];
+    /**
+     * The "whereIn" clauses of the query.
+     *
+     * @var array
+     */
+    protected $whereIns = [];
+    /**
+     * The "whereNotIn" clauses of the query.
+     *
+     * @var array
+     */
+    protected $whereNotIns = [];
+    /**
+     * The "orderBy" clauses of the query.
+     *
+     * @var array
+     */
+    protected $orderBys = [];
+
+    /**
      * Set the column to be selected.
      *
      * @param  string $column
@@ -144,7 +175,7 @@ trait QueryBuilderOverride
      *
      * @param  string $column
      * @param  string $operator
-     * @param  mixed  $value
+     * @param  null|mixed  $value
      *
      * @return Model
      */
@@ -254,5 +285,77 @@ trait QueryBuilderOverride
             $page,
             $options
         );
+    }
+
+    /**
+     * Apply the "where" clauses on the collection.
+     *
+     * @param $modelsCollection
+     *
+     * @return void
+     */
+    protected function applyWhereClauses(Collection &$modelsCollection)
+    {
+        foreach ($this->wheres as $where) {
+            $modelsCollection->where($where['column'], $where['operator'], $where['value']);
+        }
+    }
+
+    /**
+     * Apply the "whereIn" clauses on the collection.
+     *
+     * @param $modelsCollection
+     *
+     * @return void
+     */
+    protected function applyWhereInClauses(Collection &$modelsCollection)
+    {
+        foreach ($this->whereIns as $whereIn) {
+            $modelsCollection->whereIn($whereIn['column'], $whereIn['values']);
+        }
+    }
+
+    /**
+     * Apply the "whereNotIn" clauses on the collection.
+     *
+     * @param $modelsCollection
+     *
+     * @return void
+     */
+    protected function applyWhereNotInClauses(Collection &$modelsCollection)
+    {
+        foreach ($this->whereNotIns as $whereNotIn) {
+            $modelsCollection->whereNotIn($whereNotIn['column'], $whereNotIn['values']);
+        }
+    }
+
+    /**
+     * Apply the "orderBy" clauses on the collection.
+     *
+     * @param $modelsCollection
+     *
+     * @return void
+     */
+    protected function applyOrderByClauses(Collection &$modelsCollection)
+    {
+        foreach ($this->orderBys as $orders) {
+            $modelsCollection = $modelsCollection->sortBy(
+                $orders['column'],
+                SORT_REGULAR,
+                $orders['direction'] === 'desc'
+            );
+        }
+    }
+
+    /**
+     * Apply the "select" clauses on the collection.
+     *
+     * @param $modelsCollection
+     *
+     * @return void
+     */
+    protected function applySelectClauses(Collection &$modelsCollection)
+    {
+        $modelsCollection->only(array_unique($this->selects));
     }
 }

@@ -3,9 +3,124 @@
 namespace Okipa\LaravelModelJsonStorage;
 
 use Exception;
+use Illuminate\Support\Collection;
 
 trait ModelOverride
 {
+    /**
+     * The primary key for the model.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id';
+
+    /**
+     * Fill the model with an array of attributes.
+     *
+     * @param  array $attributes
+     *
+     * @return Model
+     * @throws \Illuminate\Database\Eloquent\MassAssignmentException
+     */
+    public abstract function fill(array $attributes);
+
+    /**
+     * Execute the query as a "select" statement.
+     *
+     * @param  array $columns
+     *
+     * @return Collection
+     */
+    public abstract function get(array $columns = ['*']);
+
+    /**
+     * Determine if the model uses timestamps.
+     *
+     * @return bool
+     */
+    public abstract function usesTimestamps();
+
+    /**
+     * Get a fresh timestamp for the model.
+     *
+     * @return string
+     */
+    public abstract function freshTimestampString();
+
+    /**
+     * Set the value of the "created at" attribute.
+     *
+     * @param  string $value
+     *
+     * @return Model
+     */
+    public abstract function setCreatedAt(string $value);
+
+    /**
+     * Set the value of the "updated at" attribute.
+     *
+     * @param  string $value
+     *
+     * @return Model
+     */
+    public abstract function setUpdatedAt(string $value);
+
+    /**
+     * Get an attribute from the model.
+     *
+     * @param  string $key
+     *
+     * @return mixed
+     */
+    public abstract function getAttribute(string $key);
+
+    /**
+     * Get all of the current attributes on the model.
+     *
+     * @return array
+     */
+    public abstract function getAttributes();
+
+    /**
+     * Make the given, typically hidden, attributes visible.
+     *
+     * @param  array $attributes
+     *
+     * @return Model
+     */
+    public abstract function makeVisible(array $attributes);
+
+    /**
+     * Set the array of model attributes. No checking is done.
+     *
+     * @param  array $attributes
+     * @param  bool  $sync
+     *
+     * @return Model
+     */
+    public abstract function setRawAttributes(array $attributes, $sync = false);
+
+    /**
+     * Get the hidden attributes for the model.
+     *
+     * @return array
+     */
+    public abstract function getHidden();
+
+    /**
+     * Get all of the models from the json file.
+     *
+     * @return Collection
+     */
+    protected abstract function getFromJson();
+
+    /**
+     * Get the primary key for the model.
+     *
+     * @return string
+     */
+    public abstract function getKeyName();
+
     /**
      * Get all of the models from the json file.
      *
@@ -57,5 +172,111 @@ trait ModelOverride
         $this->deleteModelFromJson();
 
         return true;
+    }
+
+    /**
+     * Save the model to the json file.
+     *
+     * @return bool
+     */
+    protected function saveToJson()
+    {
+        if ($this->{$this->primaryKey}) {
+            $this->updateModelInJson();
+        } else {
+            $this->createModelInJson();
+        }
+
+        return true;
+    }
+
+    /**
+     * Save a new model in the json file.
+     *
+     * @return void
+     */
+    protected function createModelInJson()
+    {
+        $this->setModelPrimaryKeyValue();
+        if ($this->usesTimestamps()) {
+            $this->setTimestampFields();
+        }
+        $models = $this->all()->push($this->makeVisible($this->getHidden()));
+        File::put($this->getJsonStoragePath(), $models->toJson());
+    }
+
+    /**
+     * Update the model in the json file.
+     *
+     * @return void
+     */
+    protected function updateModelInJson()
+    {
+        if ($this->usesTimestamps()) {
+            $this->setTimestampFields(true);
+        }
+        $withoutCurrentModel = $this->whereNotIn($this->primaryKey, [$this->getAttribute($this->primaryKey)])->get();
+        $models = $withoutCurrentModel->push($this->makeVisible($this->getHidden()))->sortBy($this->primaryKey);
+        File::put($this->getJsonStoragePath(), $models->toJson());
+    }
+
+    /**
+     * Delete the model from the json file.
+     *
+     * @return void
+     */
+    protected function deleteModelFromJson()
+    {
+        $withoutCurrentModel = $this->whereNotIn($this->primaryKey, [$this->getAttribute($this->primaryKey)])->get();
+        File::put($this->getJsonStoragePath(), $withoutCurrentModel->toJson());
+    }
+
+    /**
+     * Set the model primary key by incrementing from the bigger id found in the json file.
+     *
+     * @return void
+     */
+    protected function setModelPrimaryKeyValue(): void
+    {
+        $modelPrimaryKeyValue = 1;
+        if (! $this->getFromJson()->isEmpty()) {
+            $lastModelId = $this->getFromJson()->sortBy('id')->last()->getAttribute($this->primaryKey);
+            $modelPrimaryKeyValue = $lastModelId + 1;
+        }
+        $attributes = array_merge([$this->primaryKey => $modelPrimaryKeyValue], $this->getAttributes());
+        $this->setRawAttributes($attributes);
+    }
+
+    /**
+     * Set the model timestamp field
+     *
+     * @param bool $update
+     *
+     * @return void
+     */
+    protected function setTimestampFields($update = false)
+    {
+        $now = $this->freshTimestampString();
+        if (! $update) {
+            $this->setCreatedAt($now);
+        }
+        $this->setUpdatedAt($now);
+    }
+
+    /**
+     * Get the storage path for the model json file.
+     *
+     * @return string
+     */
+    protected function getJsonStoragePath()
+    {
+        $modelName = str_slug(last(explode('\\', $this->getMorphClass())));
+        $configStoragePath = storage_path(config('model-json-storage.storage_path'));
+        if (! is_dir($configStoragePath)) {
+            mkdir($configStoragePath, 0777, true);
+        }
+        $jsonStoragePath = $configStoragePath . '/' . $modelName . '.json';
+
+        return $jsonStoragePath;
     }
 }
