@@ -97,6 +97,7 @@ Retrieve the list of the available methods bellow.
 However, if you want to add a method for your personal needs, do not hesitate to improve this package with a PR.
 
 ### Overridden Illuminate\Database\Eloquent\Model methods
+Official API : https://laravel.com/api/5.4/Illuminate/Database/Eloquent/Model.html
 
 #### save()
 ```php
@@ -146,7 +147,8 @@ public function delete()
 public static function all($columns = ['*'])
 ```
 
-### Illuminate\Database\Query\Builder
+### Overridden Illuminate\Database\Query\Builder methods
+Official API : https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html
 
 #### select()
 ```php
@@ -355,7 +357,8 @@ public function count(array $columns = ['*'])
 public function paginate($perPage = null, $page = null, $options = [])
 ```
 
-### Illuminate\Database\Concerns\BuildsQueries
+### Overridden Illuminate\Database\Concerns\BuildsQueries methods
+Official API : https://laravel.com/api/5.4/Illuminate/Database/Concerns/BuildsQueries.html
 
 #### chunk()
 ```php
