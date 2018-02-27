@@ -41,7 +41,7 @@ $this->app->register(Okipa\LaravelModelJsonStorage\ModelJsonStorageServiceProvid
 First, add the `ModelJsonStorage` trait in your model.
 
 ```php
-class Test extends Authenticatable
+class MyTestModel extends Illuminate\Database\Eloquent\Model
 {
     use Okipa\LaravelModelJsonStorage\ModelJsonStorage;
     
@@ -53,7 +53,7 @@ Then, just manipulate your model normally.
 After a storage, you will see a json file named with your model title in the path defined in the `model-json-storage` config file.
 
 ```php
-$user = app(User::class)->create([
+$testModel = app(MyTestModel::class)->create([
     'name' => 'John Doe',
     'email' => 'john@doe.com',
     'password' => Hash::make('secret'),
@@ -61,21 +61,21 @@ $user = app(User::class)->create([
 ```
 
 ```php
-$model = app(User::class)->all();
+$testModel = app(MyTestModel::class)->all();
 ```
 
 ```php
-$model = app(User::class)->where('email', 'john@doe.com')->first();
+$testModel = app(MyTestModel::class)->where('email', 'john@doe.com')->first();
 ```
 
 ```php
-$model->update([
+$testModel->update([
     'name' => 'Gary Cook'
 ]);
 ```
 
 ```php
-$model->delete();
+$testModel->delete();
 ```
 
 ------------------------------------------------------------------------------------------------------------------------
