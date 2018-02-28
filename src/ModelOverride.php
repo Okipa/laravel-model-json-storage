@@ -17,9 +17,9 @@ trait ModelOverride
     /**
      * Fill the model with an array of attributes.
      *
-     * @param  array $attributes
+     * @param  array  $attributes
+     * @return $this
      *
-     * @return Model
      * @throws \Illuminate\Database\Eloquent\MassAssignmentException
      */
     public abstract function fill(array $attributes);
@@ -50,29 +50,26 @@ trait ModelOverride
     /**
      * Set the value of the "created at" attribute.
      *
-     * @param  mixed $value
-     *
-     * @return Model
+     * @param  mixed  $value
+     * @return $this
      */
     public abstract function setCreatedAt($value);
 
     /**
      * Set the value of the "updated at" attribute.
      *
-     * @param  mixed $value
-     *
-     * @return Model
+     * @param  mixed  $value
+     * @return $this
      */
     public abstract function setUpdatedAt($value);
 
     /**
      * Get an attribute from the model.
      *
-     * @param  string $key
-     *
+     * @param  string  $key
      * @return mixed
      */
-    public abstract function getAttribute(string $key);
+    public abstract function getAttribute($key);
 
     /**
      * Get all of the current attributes on the model.
@@ -84,19 +81,17 @@ trait ModelOverride
     /**
      * Make the given, typically hidden, attributes visible.
      *
-     * @param  array $attributes
-     *
-     * @return Model
+     * @param  array|string  $attributes
+     * @return $this
      */
-    public abstract function makeVisible(array $attributes);
+    public abstract function makeVisible($attributes);
 
     /**
      * Set the array of model attributes. No checking is done.
      *
-     * @param  array $attributes
+     * @param  array  $attributes
      * @param  bool  $sync
-     *
-     * @return Model
+     * @return $this
      */
     public abstract function setRawAttributes(array $attributes, $sync = false);
 

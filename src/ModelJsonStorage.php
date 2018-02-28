@@ -21,21 +21,19 @@ trait ModelJsonStorage
     /**
      * Make the given, typically hidden, attributes visible.
      *
-     * @param  array|string $attributes
-     *
-     * @return Model
+     * @param  array|string  $attributes
+     * @return $this
      */
-    abstract public function makeVisible(mixed $attributes);
+    public abstract function makeVisible($attributes);
 
     /**
      * Set the array of model attributes. No checking is done.
      *
-     * @param  array $attributes
+     * @param  array  $attributes
      * @param  bool  $sync
-     *
-     * @return Model
+     * @return $this
      */
-    abstract public function setRawAttributes(array $attributes, $sync = false);
+    public abstract function setRawAttributes(array $attributes, $sync = false);
 
     /**
      * Get the hidden attributes for the model.
