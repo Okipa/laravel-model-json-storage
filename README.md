@@ -17,7 +17,7 @@ Please keep in mind that :
 - Consequently, the json file is always entirely read when you access to your data
 - Consequently, you should **NOT** use this package if you have a lot of instances to store, it could cause performance issues rather than improve it.
 - All the query-related and model-related functionalities are not available (especially those which use database), this package has been made for quite simple use cases.
-- This package enables you to manipulate models as if it they would been stored in database but it always uses the [Illuminate\Support\Collection methods](https://laravel.com/docs/5.6/collections) methods under the hood.
+- This package enables you to manipulate models as if it they would been stored in database but it always uses the [Illuminate\Support\Collection methods](https://laravel.com/docs/5.4/collections) methods under the hood.
 
 ------------------------------------------------------------------------------------------------------------------------
 

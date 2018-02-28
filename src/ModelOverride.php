@@ -50,11 +50,11 @@ trait ModelOverride
     /**
      * Set the value of the "created at" attribute.
      *
-     * @param  string $value
+     * @param  mixed $value
      *
      * @return Model
      */
-    public abstract function setCreatedAt(string $value);
+    public abstract function setCreatedAt(mixed $value);
 
     /**
      * Set the value of the "updated at" attribute.
