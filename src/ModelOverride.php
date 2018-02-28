@@ -54,16 +54,16 @@ trait ModelOverride
      *
      * @return Model
      */
-    public abstract function setCreatedAt(mixed $value);
+    public abstract function setCreatedAt($value);
 
     /**
      * Set the value of the "updated at" attribute.
      *
-     * @param  string $value
+     * @param  mixed $value
      *
      * @return Model
      */
-    public abstract function setUpdatedAt(string $value);
+    public abstract function setUpdatedAt($value);
 
     /**
      * Get an attribute from the model.
