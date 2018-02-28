@@ -2,7 +2,10 @@
 
 namespace Tests;
 
-abstract class ModelJsonStorageTestCase extends \Orchestra\Testbench\TestCase
+use Orchestra\Testbench\TestCase;
+use File;
+
+abstract class ModelJsonStorageTestCase extends TestCase
 {
     /**
      * Define environment setup.
@@ -20,20 +23,7 @@ abstract class ModelJsonStorageTestCase extends \Orchestra\Testbench\TestCase
             'database' => ':memory:',
             'prefix'   => '',
         ]);
-    }
-
-    /**
-     * Get package providers.
-     *
-     * @param  \Illuminate\Foundation\Application $app
-     *
-     * @return array
-     */
-    protected function getPackageProviders($app)
-    {
-        return [
-            //            'Okipa\LaravelModelJsonStorage\ModelJsonStorageServiceProvider'
-        ];
+        $app['config']->set('model-json-storage.storage_path', 'app/json');
     }
 
     /**
@@ -46,10 +36,6 @@ abstract class ModelJsonStorageTestCase extends \Orchestra\Testbench\TestCase
             '--database' => 'testing',
             '--path'     => realpath(__DIR__ . '/database/migrations'),
         ]);
+        File::deleteDirectory(storage_path(config('model-json-storage.storage_path')));
     }
-
-//    protected function getPackageAliases($app)
-//    {
-//        return ['Eloquent' => 'Illuminate\Database\Eloquent\Model'];
-//    }
 }

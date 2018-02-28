@@ -2,6 +2,7 @@
 
 namespace Okipa\LaravelModelJsonStorage;
 
+use File;
 use Exception;
 use Illuminate\Support\Collection;
 
@@ -170,6 +171,23 @@ trait ModelOverride
     }
 
     /**
+     * Get the storage path for the model json file.
+     *
+     * @return string
+     */
+    public function getJsonStoragePath()
+    {
+        $modelName = str_slug(last(explode('\\', $this->getMorphClass())));
+        $configStoragePath = storage_path(config('model-json-storage.storage_path'));
+        if (! is_dir($configStoragePath)) {
+            mkdir($configStoragePath, 0777, true);
+        }
+        $jsonStoragePath = $configStoragePath . '/' . $modelName . '.json';
+
+        return $jsonStoragePath;
+    }
+
+    /**
      * Save the model to the json file.
      *
      * @return bool
@@ -192,10 +210,10 @@ trait ModelOverride
      */
     protected function createModelInJson()
     {
-        $this->setModelPrimaryKeyValue();
         if ($this->usesTimestamps()) {
             $this->setTimestampFields();
         }
+        $this->setModelPrimaryKeyValue();
         $models = $this->all()->push($this->makeVisible($this->getHidden()));
         File::put($this->getJsonStoragePath(), $models->toJson());
     }
@@ -238,8 +256,7 @@ trait ModelOverride
             $lastModelId = $this->getFromJson()->sortBy('id')->last()->getAttribute($this->primaryKey);
             $modelPrimaryKeyValue = $lastModelId + 1;
         }
-        $attributes = array_merge([$this->primaryKey => $modelPrimaryKeyValue], $this->getAttributes());
-        $this->setRawAttributes($attributes);
+        $this->id = $modelPrimaryKeyValue;
     }
 
     /**
@@ -252,26 +269,9 @@ trait ModelOverride
     protected function setTimestampFields($update = false)
     {
         $now = $this->freshTimestampString();
+        $this->setUpdatedAt($now);
         if (! $update) {
             $this->setCreatedAt($now);
         }
-        $this->setUpdatedAt($now);
-    }
-
-    /**
-     * Get the storage path for the model json file.
-     *
-     * @return string
-     */
-    protected function getJsonStoragePath()
-    {
-        $modelName = str_slug(last(explode('\\', $this->getMorphClass())));
-        $configStoragePath = storage_path(config('model-json-storage.storage_path'));
-        if (! is_dir($configStoragePath)) {
-            mkdir($configStoragePath, 0777, true);
-        }
-        $jsonStoragePath = $configStoragePath . '/' . $modelName . '.json';
-
-        return $jsonStoragePath;
     }
 }

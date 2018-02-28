@@ -3,7 +3,6 @@
 namespace Okipa\LaravelModelJsonStorage;
 
 use File;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 trait ModelJsonStorage
