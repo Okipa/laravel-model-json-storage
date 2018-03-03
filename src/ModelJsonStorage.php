@@ -7,20 +7,15 @@ use Illuminate\Support\Collection;
 
 trait ModelJsonStorage
 {
-    use QueryBuilderOverride;
+    use BuilderOverride;
     use BuildsQueriesOverride;
     use ModelOverride;
-    /**
-     * The collection of models extracted from the json file.
-     *
-     * @var Collection
-     */
-    protected $modelsFromJson;
 
     /**
      * Make the given, typically hidden, attributes visible.
      *
-     * @param  array|string  $attributes
+     * @param  array|string $attributes
+     *
      * @return $this
      */
     public abstract function makeVisible($attributes);
@@ -28,8 +23,9 @@ trait ModelJsonStorage
     /**
      * Set the array of model attributes. No checking is done.
      *
-     * @param  array  $attributes
+     * @param  array $attributes
      * @param  bool  $sync
+     *
      * @return $this
      */
     public abstract function setRawAttributes(array $attributes, $sync = false);
@@ -59,33 +55,18 @@ trait ModelJsonStorage
     abstract public function getMorphClass();
 
     /**
-     * Get all of the models from the json file.
-     *
-     * @return Collection
-     */
-    protected function getFromJson()
-    {
-        if (! $this->modelsFromJson) {
-            $this->loadModelsFromJson();
-        }
-
-        return $this->modelsFromJson;
-    }
-
-    /**
      * Load all of the models from the json file in the "modelsFromJson" variable.
      *
-     * @return void
+     * @return Collection
      */
     protected function loadModelsFromJson()
     {
         $modelsArray = $this->getRawArrayFromJson();
         foreach ($modelsArray as $key => $modelArray) {
-            $modelsArray[$key] = app($this->getMorphClass())
-                ->setRawAttributes($modelArray)
-                ->makeVisible($this->getHidden());
+            $modelsArray[$key] = app($this->getMorphClass())->setRawAttributes($modelArray);
         }
-        $this->modelsFromJson = collect($modelsArray);
+
+        return collect($modelsArray);
     }
 
     /**

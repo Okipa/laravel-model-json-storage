@@ -26,16 +26,4 @@ trait BuildsQueriesOverride
     {
         return $this->get($columns)->first();
     }
-
-    /**
-     * Chunk the results of the query.
-     *
-     * @param  int $count
-     *
-     * @return Collection
-     */
-    public function chunk(int $count)
-    {
-        return $this->get()->chunk($count);
-    }
 }
