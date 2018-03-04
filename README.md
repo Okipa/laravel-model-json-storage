@@ -4,6 +4,8 @@
 [![Latest Version](https://img.shields.io/github/release/okipa/laravel-model-json-storage.svg?style=flat-square)](https://github.com/Okipa/laravel-model-json-storage/releases)
 [![Total Downloads](https://img.shields.io/packagist/dt/okipa/laravel-model-json-storage.svg?style=flat-square)](https://packagist.org/packages/okipa/laravel-model-json-storage)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://scrutinizer-ci.com/g/Okipa/laravel-model-json-storage/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Okipa/laravel-model-json-storage/build-status/master)
+[![Code Coverage](https://scrutinizer-ci.com/g/Okipa/laravel-model-json-storage/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Okipa/laravel-model-json-storage/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Okipa/laravel-model-json-storage/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Okipa/laravel-model-json-storage/?branch=master)
 
 Storing your models in a json file rather than in database (single or few lines recording) can be a good option.  
