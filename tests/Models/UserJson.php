@@ -1,6 +1,6 @@
 <?php
 
-namespace Models;
+namespace Okipa\LaravelModelJsonStorage\Test\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Okipa\LaravelModelJsonStorage\ModelJsonStorage;

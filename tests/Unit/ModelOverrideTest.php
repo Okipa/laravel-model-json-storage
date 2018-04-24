@@ -1,17 +1,17 @@
 <?php
 
-namespace Tests\Unit;
+namespace Okipa\LaravelModelJsonStorage\Test\Unit;
 
 use File;
 use Hash;
-use Models\UserJson;
-use Okipa\LaravelModelJsonStorage\Models\UserDatabase;
-use Okipa\LaravelModelJsonStorage\Test\helpers\CreateUsers;
+use Okipa\LaravelModelJsonStorage\Test\Fakers\UsersFaker;
+use Okipa\LaravelModelJsonStorage\Test\Models\UserJson;
+use Okipa\LaravelModelJsonStorage\Test\Models\UserDatabase;
 use Tests\ModelJsonStorageTestCase;
 
 class ModelOverrideTest extends ModelJsonStorageTestCase
 {
-    use CreateUsers;
+    use UsersFaker;
 
     public function setUp()
     {
@@ -80,7 +80,7 @@ class ModelOverrideTest extends ModelJsonStorageTestCase
         $allJsonUsersArray = app(UserJson::class)->all()->toArray();
         $this->assertEquals($allDatabaseUsersArray, $allJsonUsersArray);
     }
-    
+
     public function testDelete()
     {
         $usersCollection = $this->createMultipleDatabaseUsers(3);

@@ -1,14 +1,14 @@
 <?php
 
-namespace Okipa\LaravelModelJsonStorage\Test\helpers;
+namespace Okipa\LaravelModelJsonStorage\Test\Fakers;
 
 use Faker\Factory;
 use Hash;
 use Illuminate\Support\Collection;
-use Models\UserJson;
-use Okipa\LaravelModelJsonStorage\Models\UserDatabase;
+use Okipa\LaravelModelJsonStorage\Test\Models\UserJson;
+use Okipa\LaravelModelJsonStorage\Test\Models\UserDatabase;
 
-trait CreateUsers
+trait UsersFaker
 {
     public $faker;
     public $clearPassword;
