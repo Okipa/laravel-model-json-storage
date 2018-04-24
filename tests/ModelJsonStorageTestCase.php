@@ -2,11 +2,14 @@
 
 namespace Tests;
 
-use Orchestra\Testbench\TestCase;
+use Faker\Factory;
 use File;
+use Orchestra\Testbench\TestCase;
 
 abstract class ModelJsonStorageTestCase extends TestCase
 {
+    public $faker;
+
     /**
      * Define environment setup.
      *
@@ -37,5 +40,6 @@ abstract class ModelJsonStorageTestCase extends TestCase
             '--path'     => realpath(__DIR__ . '/database/migrations'),
         ]);
         File::deleteDirectory(storage_path(config('model-json-storage.storage_path')));
+        $this->faker = Factory::create();
     }
 }

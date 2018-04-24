@@ -14,7 +14,6 @@ class BuildsQueriesOverrideTest extends ModelJsonStorageTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->instanciateFaker();
     }
 
     public function testFirst()

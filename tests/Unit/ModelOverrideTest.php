@@ -16,7 +16,6 @@ class ModelOverrideTest extends ModelJsonStorageTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->instanciateFaker();
     }
 
     public function testGetStoragePath()

@@ -2,7 +2,6 @@
 
 namespace Okipa\LaravelModelJsonStorage\Test\Fakers;
 
-use Faker\Factory;
 use Hash;
 use Illuminate\Support\Collection;
 use Okipa\LaravelModelJsonStorage\Test\Models\UserJson;
@@ -10,14 +9,8 @@ use Okipa\LaravelModelJsonStorage\Test\Models\UserDatabase;
 
 trait UsersFaker
 {
-    public $faker;
     public $clearPassword;
     public $data;
-
-    public function instanciateFaker()
-    {
-        $this->faker = Factory::create();
-    }
 
     public function createUniqueDatabaseAndJsonUser()
     {
