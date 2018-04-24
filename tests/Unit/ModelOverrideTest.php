@@ -5,9 +5,9 @@ namespace Okipa\LaravelModelJsonStorage\Test\Unit;
 use File;
 use Hash;
 use Okipa\LaravelModelJsonStorage\Test\Fakers\UsersFaker;
+use Okipa\LaravelModelJsonStorage\Test\ModelJsonStorageTestCase;
 use Okipa\LaravelModelJsonStorage\Test\Models\UserJson;
 use Okipa\LaravelModelJsonStorage\Test\Models\UserDatabase;
-use Tests\ModelJsonStorageTestCase;
 
 class ModelOverrideTest extends ModelJsonStorageTestCase
 {

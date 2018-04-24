@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Okipa\LaravelModelJsonStorage\Test;
 
 use Faker\Factory;
 use File;
