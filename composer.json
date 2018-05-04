@@ -3,7 +3,9 @@
     "description": "Storing your models in a json file rather than in database (single or few lines recording) can be a good option. This package saves you to create a table for a ridiculous amount of lines, improves the data recovery performances, and allows you to store and access to your models from a json files as you would do it in database.",
     "keywords": [
         "okipa",
+        "package",
         "laravel",
+        "php",
         "model",
         "json",
         "storage"
