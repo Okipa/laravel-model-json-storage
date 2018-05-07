@@ -2,7 +2,6 @@
 
 namespace Okipa\LaravelModelJsonStorage\Test\Unit;
 
-
 use Okipa\LaravelModelJsonStorage\Test\Fakers\UsersFaker;
 use Okipa\LaravelModelJsonStorage\Test\ModelJsonStorageTestCase;
 use Okipa\LaravelModelJsonStorage\Test\Models\UserDatabase;
@@ -20,11 +19,22 @@ class BuilderOverrideTest extends ModelJsonStorageTestCase
     public function testGet()
     {
         $this->createMultipleDatabaseUsers(3);
-        $getDatabaseUsers = app(UserDatabase::class)->get();
-        $getJsonUsers = app(UserJson::class)->get();
+        $getDatabaseUsersArray = app(UserDatabase::class)->get()->toArray();
+        $getJsonUsersArray = app(UserJson::class)->get()->toArray();
+        // notice : we remove the created_at and updated_at fields that are not relevant and can be different
+        foreach ($getDatabaseUsersArray as $key => $databaseUserArray) {
+            unset($databaseUserArray['created_at']);
+            unset($databaseUserArray['updated_at']);
+            $getDatabaseUsersArray[$key] = $databaseUserArray;
+        }
+        foreach ($getJsonUsersArray as $key => $jsonUserArray) {
+            unset($jsonUserArray['created_at']);
+            unset($jsonUserArray['updated_at']);
+            $getJsonUsersArray[$key] = $jsonUserArray;
+        }
+        $this->assertEquals($getDatabaseUsersArray, $getJsonUsersArray);
         $getIdAndEmailDatabaseUsers = app(UserDatabase::class)->get(['id', 'email']);
         $getIdAndEmailJsonUsers = app(UserJson::class)->get(['id', 'email']);
-        $this->assertEquals($getDatabaseUsers->toArray(), $getJsonUsers->toArray());
         // notice : we compare the models one by one because query builder does return objects from get() in a random way
         $getIdAndEmailDatabaseUsers->each(function($databaseUser) use ($getIdAndEmailJsonUsers) {
             $jsonUserToCompare = $getIdAndEmailJsonUsers->where('id', $databaseUser->id)->first();
