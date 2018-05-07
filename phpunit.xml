@@ -19,7 +19,9 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./src/</directory>
-            <exclude>./src/ModelJsonStorageServiceProviderProvider.php</exclude>
+            <exclude>
+                <file>./src/ModelJsonStorageServiceProviderProvider.php</file>
+            </exclude>
         </whitelist>
     </filter>
 </phpunit>
