@@ -158,7 +158,7 @@ trait BuilderOverride
      * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function findOrFail($id, $columns = ['*'])
+    public function findOrFail(int $id, array $columns = ['*'])
     {
         $result = $this->find($id, $columns);
         if (is_array($id)) {
