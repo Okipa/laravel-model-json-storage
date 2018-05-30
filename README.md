@@ -30,7 +30,7 @@ composer require okipa/laravel-model-json-storage
 ```
 
 - Laravel 5.5+ uses Package Auto-Discovery, so doesn't require you to manually add the ServiceProvider.
-If you don't use auto-discovery or if you use a Laravel 5.4- version, add the package service provider in the `register()` method from your `app/Providers/AppServiceProvider.php` :
+If you don't use auto-discovery or if you use a Laravel 5.0- version, add the package service provider in the `register()` method from your `app/Providers/AppServiceProvider.php` :
 ```php
 // laravel model json storage
 // https://github.com/Okipa/laravel-model-json-storage
@@ -99,29 +99,30 @@ Retrieve the list of the available methods bellow.
 However, if you want to add a method for your personal needs, do not hesitate to improve this package with a PR.
 
 ### Usable Illuminate\Database\Eloquent\Model methods
-- [save()](https://laravel.com/api/5.4/Illuminate/Database/Eloquent/Model.html#method_save)
-- [update()](https://laravel.com/api/5.4/Illuminate/Database/Eloquent/Model.html#method_update)
-- [all()](https://laravel.com/api/5.4/Illuminate/Database/Eloquent/Model.html#method_all)
+- [save()](https://laravel.com/api/5.0/Illuminate/Database/Eloquent/Model.html#method_save)
+- [update()](https://laravel.com/api/5.0/Illuminate/Database/Eloquent/Model.html#method_update)
+- [all()](https://laravel.com/api/5.0/Illuminate/Database/Eloquent/Model.html#method_all)
 
 ### Usable Illuminate\Database\Query\Builder methods
-- [get()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_get)
-- [Select()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_select)
-- [addSelect()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_addSelect)
-- [where()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_where)
-- [whereNull()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_whereNull)
-- [whereNotNull()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_whereNotNull)
-- [orderBy()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_orderBy)
-- [orderByDesc()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_orderByDesc)
-- [whereIn()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_whereIn)
-- [whereNotIn()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_whereNotIn)
-- [find()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_find)
-- [paginate()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_paginate)
-- [value()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_value)
-- [pluck()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_pluck)
-- [count()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_count)
-- [min()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_min)
-- [max()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_max)
-- [avg()](https://laravel.com/api/5.4/Illuminate/Database/Query/Builder.html#method_avg)
+- [get()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_get)
+- [Select()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_select)
+- [addSelect()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_addSelect)
+- [where()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_where)
+- [whereNull()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_whereNull)
+- [whereNotNull()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_whereNotNull)
+- [orderBy()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_orderBy)
+- [orderByDesc()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_orderByDesc)
+- [whereIn()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_whereIn)
+- [whereNotIn()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_whereNotIn)
+- [find()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_find)
+- [findOrFail()](https://laravel.com/api/5.0/Illuminate/Database/Eloquent/Builder.html#method_findOrFail)
+- [paginate()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_paginate)
+- [value()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_value)
+- [pluck()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_pluck)
+- [count()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_count)
+- [min()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_min)
+- [max()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_max)
+- [avg()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_avg)
 
 ### Usable Illuminate\Database\Concerns\BuildsQueries methods
-- [first()](https://laravel.com/api/5.4/Illuminate/Database/Concerns/BuildsQueries.html#method_first)
+- [first()](https://laravel.com/api/5.0/Illuminate/Database/Concerns/BuildsQueries.html#method_first)
