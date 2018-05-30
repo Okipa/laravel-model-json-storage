@@ -127,12 +127,21 @@ class BuilderOverrideTest extends ModelJsonStorageTestCase
     public function testPaginate()
     {
         $this->createMultipleDatabaseUsers(10);
-        $firstPageDatabaseUser = app(UserDatabase::class)->paginate();
-        $firstPageJsonUser = app(UserJson::class)->paginate();
-        $secondPageDatabaseUser = app(UserDatabase::class)->paginate(5, ['name'], 'page', 2);
-        $secondPageJsonUser = app(UserJson::class)->paginate(5, ['name'], 'page', 2);
-        $this->assertEquals($firstPageDatabaseUser->toArray(), $firstPageJsonUser->toArray());
-        $this->assertEquals($secondPageDatabaseUser->toArray(), $secondPageJsonUser->toArray());
+        $firstPageDatabaseUsers = app(UserDatabase::class)->paginate();
+        $firstPageJsonUsers = app(UserJson::class)->paginate();
+        $secondPageDatabaseUsers = app(UserDatabase::class)->paginate(5, ['name'], 'page', 2);
+        $secondPageJsonUsers = app(UserJson::class)->paginate(5, ['name'], 'page', 2);
+        // notice : we remove the created_at and updated_at fields that are not relevant and can be different
+        foreach ($firstPageDatabaseUsers as $key => $firstPageDatabaseUser) {
+            unset($firstPageDatabaseUser->created_at);
+            unset($firstPageDatabaseUser->updated_at);
+        }
+        foreach ($firstPageJsonUsers as $key => $firstPageJsonUser) {
+            unset($firstPageJsonUser->created_at);
+            unset($firstPageJsonUser->updated_at);
+        }
+        $this->assertEquals($secondPageDatabaseUsers->toArray(), $secondPageJsonUsers->toArray());
+        $this->assertEquals($secondPageDatabaseUsers->toArray(), $secondPageJsonUsers->toArray());
     }
 
     public function testValue()
