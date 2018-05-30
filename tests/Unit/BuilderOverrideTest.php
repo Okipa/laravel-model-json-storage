@@ -101,6 +101,29 @@ class BuilderOverrideTest extends ModelJsonStorageTestCase
         $this->assertEquals($foundDatabaseUser->toArray(), $foundJsonUser->toArray());
     }
 
+    public function testFailedFind()
+    {
+        $foundDatabaseUser = app(UserDatabase::class)->find(4);
+        $this->assertEmpty($foundDatabaseUser);
+    }
+
+    public function testFindOrFail()
+    {
+        $this->createMultipleDatabaseUsers(5);
+        $foundDatabaseUser = app(UserDatabase::class)->findOrFail(4);
+        $foundJsonUser = app(UserJson::class)->findOrFail(4);
+        $this->assertEquals($foundDatabaseUser->toArray(), $foundJsonUser->toArray());
+    }
+
+    /**
+     * @expectedException \Illuminate\Database\Eloquent\ModelNotFoundException
+     * @expectedExceptionMessage No query results for model [Okipa\LaravelModelJsonStorage\Test\Models\UserDatabase] 4
+     */
+    public function testFailedFindOrFail()
+    {
+        app(UserDatabase::class)->findOrFail(4);
+    }
+
     public function testPaginate()
     {
         $this->createMultipleDatabaseUsers(10);

@@ -2,6 +2,7 @@
 
 namespace Okipa\LaravelModelJsonStorage;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
@@ -45,6 +46,22 @@ trait BuilderOverride
      * @return int
      */
     abstract public function getPerPage();
+
+    /**
+     * Load all of the models from the json file in the "modelsFromJson" variable.
+     *
+     * @return Collection
+     */
+    abstract protected function loadModelsFromJson();
+
+    /**
+     * Execute the query and get the first result.
+     *
+     * @param  array $columns
+     *
+     * @return Model|null
+     */
+    abstract public function first(array $columns = ['*']);
 
     /**
      * Set the column to be selected.
@@ -133,13 +150,28 @@ trait BuilderOverride
     }
 
     /**
-     * Execute the query and get the first result.
+     * Find a model by its primary key or throw an exception.
      *
+     * @param  mixed $id
      * @param  array $columns
      *
-     * @return Model|null
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    abstract public function first(array $columns = ['*']);
+    public function findOrFail($id, $columns = ['*'])
+    {
+        $result = $this->find($id, $columns);
+        if (is_array($id)) {
+            if (count($result) == count(array_unique($id))) {
+                return $result;
+            }
+        } elseif (! is_null($result)) {
+            return $result;
+        }
+        throw (new ModelNotFoundException)->setModel(
+            get_class($this), $id
+        );
+    }
 
     /**
      * Add a basic where clause to the query.
@@ -194,6 +226,98 @@ trait BuilderOverride
         $this->applySelectClauses($modelsCollection);
 
         return $modelsCollection->values();
+    }
+
+    /**
+     * Get an array with the values of a given column.
+     *
+     * @param string $column
+     * @param string null|$key
+     *
+     * @return Collection
+     */
+    public function pluck(string $column, string $key = null)
+    {
+        return $this->get()->pluck($column, $key);
+    }
+
+    /**
+     * Retrieve the "count" result of the query.
+     *
+     * @param  array $columns
+     *
+     * @return int
+     */
+    public function count(array $columns = ['*'])
+    {
+        return $this->get($columns)->count();
+    }
+
+    /**
+     * Retrieve the minimum value of a given column.
+     *
+     * @param $column
+     *
+     * @return int
+     */
+    public function min(string $column)
+    {
+        return $this->get()->min($column);
+    }
+
+    /**
+     * Retrieve the maximum value of a given column.
+     *
+     * @param  string $column
+     *
+     * @return int
+     */
+    public function max(string $column)
+    {
+        return $this->get()->max($column);
+    }
+
+    /**
+     * Retrieve the average of the values of a given column.
+     *
+     * @param  string $column
+     *
+     * @return mixed
+     */
+    public function avg($column)
+    {
+        return $this->get()->avg($column);
+    }
+
+    /**
+     * Paginate the given query.
+     *
+     * @param  int|null $perPage
+     * @param  array    $columns
+     * @param  string   $pageName
+     * @param  int|null $page
+     *
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @throws \InvalidArgumentException
+     */
+    public function paginate(int $perPage = null, array $columns = ['*'], string $pageName = 'page', int $page = null)
+    {
+        $page = $page ?: Paginator::resolveCurrentPage($pageName);
+        $perPage = $perPage ?: $this->getPerPage();
+        $modelsCollection = $this->get($columns);
+        $items = $modelsCollection->forPage($page, $perPage)->values();
+        $total = $modelsCollection->count();
+
+        return new LengthAwarePaginator(
+            $items,
+            $total,
+            $perPage,
+            $page,
+            [
+                'path'     => Paginator::resolveCurrentPath(),
+                'pageName' => $pageName,
+            ]
+        );
     }
 
     /**
@@ -281,103 +405,4 @@ trait BuilderOverride
             $modelsCollection = $selectCollection;
         }
     }
-
-    /**
-     * Get an array with the values of a given column.
-     *
-     * @param string $column
-     * @param string null|$key
-     *
-     * @return Collection
-     */
-    public function pluck(string $column, string $key = null)
-    {
-        return $this->get()->pluck($column, $key);
-    }
-
-    /**
-     * Retrieve the "count" result of the query.
-     *
-     * @param  array $columns
-     *
-     * @return int
-     */
-    public function count(array $columns = ['*'])
-    {
-        return $this->get($columns)->count();
-    }
-
-    /**
-     * Retrieve the minimum value of a given column.
-     *
-     * @param $column
-     *
-     * @return int
-     */
-    public function min(string $column)
-    {
-        return $this->get()->min($column);
-    }
-
-    /**
-     * Retrieve the maximum value of a given column.
-     *
-     * @param  string $column
-     *
-     * @return int
-     */
-    public function max(string $column)
-    {
-        return $this->get()->max($column);
-    }
-
-    /**
-     * Retrieve the average of the values of a given column.
-     *
-     * @param  string $column
-     *
-     * @return mixed
-     */
-    public function avg($column)
-    {
-        return $this->get()->avg($column);
-    }
-
-    /**
-     * Paginate the given query.
-     *
-     * @param  int|null $perPage
-     * @param  array    $columns
-     * @param  string   $pageName
-     * @param  int|null $page
-     *
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     * @throws \InvalidArgumentException
-     */
-    public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null)
-    {
-        $page = $page ?: Paginator::resolveCurrentPage($pageName);
-        $perPage = $perPage ?: $this->getPerPage();
-        $modelsCollection = $this->get($columns);
-        $items = $modelsCollection->forPage($page, $perPage)->values();
-        $total = $modelsCollection->count();
-
-        return new LengthAwarePaginator(
-            $items,
-            $total,
-            $perPage,
-            $page,
-            [
-                'path'     => Paginator::resolveCurrentPath(),
-                'pageName' => $pageName,
-            ]
-        );
-    }
-
-    /**
-     * Load all of the models from the json file in the "modelsFromJson" variable.
-     *
-     * @return Collection
-     */
-    abstract protected function loadModelsFromJson();
 }
