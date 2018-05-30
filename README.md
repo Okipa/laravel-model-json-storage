@@ -98,13 +98,13 @@ The most used query-related and model-related methods have been overridden to al
 Retrieve the list of the available methods bellow.  
 However, if you want to add a method for your personal needs, do not hesitate to improve this package with a PR.
 
-### Usable Illuminate\Database\Eloquent\Model methods
+### Available Illuminate\Database\Eloquent\Model methods
 - [save()](https://laravel.com/api/5.0/Illuminate/Database/Eloquent/Model.html#method_save)
 - [update()](https://laravel.com/api/5.0/Illuminate/Database/Eloquent/Model.html#method_update)
 - [delete()](https://laravel.com/api/5.0/Illuminate/Database/Eloquent/Model.html#method_delete)
 - [all()](https://laravel.com/api/5.0/Illuminate/Database/Eloquent/Model.html#method_all)
 
-### Usable Illuminate\Database\Query\Builder methods
+### Available Illuminate\Database\Query\Builder methods
 - [get()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_get)
 - [Select()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_select)
 - [addSelect()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_addSelect)
@@ -125,5 +125,5 @@ However, if you want to add a method for your personal needs, do not hesitate to
 - [max()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_max)
 - [avg()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_avg)
 
-### Usable Illuminate\Database\Concerns\BuildsQueries methods
+### Available Illuminate\Database\Concerns\BuildsQueries methods
 - [first()](https://laravel.com/api/5.0/Illuminate/Database/Concerns/BuildsQueries.html#method_first)
