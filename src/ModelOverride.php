@@ -245,7 +245,7 @@ trait ModelOverride
      *
      * @return void
      */
-    protected function setModelPrimaryKeyValue(): void
+    protected function setModelPrimaryKeyValue()
     {
         $modelPrimaryKeyValue = 1;
         $modelsCollection = $this->loadModelsFromJson();

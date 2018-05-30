@@ -11,11 +11,6 @@ class BuildsQueriesOverrideTest extends ModelJsonStorageTestCase
 {
     use UsersFaker;
 
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     public function testFirst()
     {
         $this->createMultipleDatabaseUsers(3);

@@ -8,15 +8,11 @@ use Okipa\LaravelModelJsonStorage\Test\Fakers\UsersFaker;
 use Okipa\LaravelModelJsonStorage\Test\ModelJsonStorageTestCase;
 use Okipa\LaravelModelJsonStorage\Test\Models\UserJson;
 use Okipa\LaravelModelJsonStorage\Test\Models\UserDatabase;
+use Okipa\LaravelModelJsonStorage\Test\Models\UserJsonWithoutPrimaryKey;
 
 class ModelOverrideTest extends ModelJsonStorageTestCase
 {
     use UsersFaker;
-
-    public function setUp()
-    {
-        parent::setUp();
-    }
 
     public function testGetStoragePath()
     {
@@ -91,5 +87,14 @@ class ModelOverrideTest extends ModelJsonStorageTestCase
         $allJsonUsersArray = app(UserJson::class)->all()->toArray();
         $this->assertEquals($databaseDeleteResult, $jsonDeleteResult);
         $this->assertEquals($allDatabaseUsersArray, $allJsonUsersArray);
+    }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessage No primary key defined on model.
+     */
+    public function testModelWithNoPrimary()
+    {
+        app(UserJsonWithoutPrimaryKey::class)->delete();
     }
 }

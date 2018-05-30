@@ -48,22 +48,6 @@ trait BuilderOverride
     abstract public function getPerPage();
 
     /**
-     * Load all of the models from the json file in the "modelsFromJson" variable.
-     *
-     * @return Collection
-     */
-    abstract protected function loadModelsFromJson();
-
-    /**
-     * Execute the query and get the first result.
-     *
-     * @param  array $columns
-     *
-     * @return Model|null
-     */
-    abstract public function first(array $columns = ['*']);
-
-    /**
      * Set the column to be selected.
      *
      * @param  string $column
@@ -137,6 +121,26 @@ trait BuilderOverride
     }
 
     /**
+     * Find a model by its primary key or throw an exception.
+     *
+     * @param  mixed $id
+     * @param  array $columns
+     *
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
+    public function findOrFail(int $id, array $columns = ['*'])
+    {
+        $result = $this->find($id, $columns);
+        if (! is_null($result)) {
+            return $result;
+        }
+        throw (new ModelNotFoundException)->setModel(
+            get_class($this), $id
+        );
+    }
+
+    /**
      * Execute a query for a single record by ID.
      *
      * @param  int   $id
@@ -150,28 +154,13 @@ trait BuilderOverride
     }
 
     /**
-     * Find a model by its primary key or throw an exception.
+     * Execute the query and get the first result.
      *
-     * @param  mixed $id
      * @param  array $columns
      *
-     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     * @return Model|null
      */
-    public function findOrFail(int $id, array $columns = ['*'])
-    {
-        $result = $this->find($id, $columns);
-        if (is_array($id)) {
-            if (count($result) == count(array_unique($id))) {
-                return $result;
-            }
-        } elseif (! is_null($result)) {
-            return $result;
-        }
-        throw (new ModelNotFoundException)->setModel(
-            get_class($this), $id
-        );
-    }
+    abstract public function first(array $columns = ['*']);
 
     /**
      * Add a basic where clause to the query.
@@ -226,6 +215,92 @@ trait BuilderOverride
         $this->applySelectClauses($modelsCollection);
 
         return $modelsCollection->values();
+    }
+
+    /**
+     * Apply the "where" clauses on the collection.
+     *
+     * @param $modelsCollection
+     *
+     * @return void
+     */
+    protected function applyWhereClauses(Collection &$modelsCollection)
+    {
+        if (! empty($this->wheres) && ! $modelsCollection->isEmpty()) {
+            foreach ($this->wheres as $where) {
+                $modelsCollection = $modelsCollection->where($where['column'], $where['operator'], $where['value']);
+            }
+        }
+    }
+
+    /**
+     * Apply the "whereIn" clauses on the collection.
+     *
+     * @param $modelsCollection
+     *
+     * @return void
+     */
+    protected function applyWhereInClauses(Collection &$modelsCollection)
+    {
+        if (! empty($this->whereIns) && ! $modelsCollection->isEmpty()) {
+            foreach ($this->whereIns as $whereIn) {
+                $modelsCollection = $modelsCollection->whereIn($whereIn['column'], $whereIn['values']);
+            }
+        }
+    }
+
+    /**
+     * Apply the "whereNotIn" clauses on the collection.
+     *
+     * @param $modelsCollection
+     *
+     * @return void
+     */
+    protected function applyWhereNotInClauses(Collection &$modelsCollection)
+    {
+        if (! empty($this->whereNotIns) && ! $modelsCollection->isEmpty()) {
+            foreach ($this->whereNotIns as $whereNotIn) {
+                $modelsCollection = $modelsCollection->whereNotIn($whereNotIn['column'], $whereNotIn['values']);
+            }
+        }
+    }
+
+    /**
+     * Apply the "orderBy" clauses on the collection.
+     *
+     * @param $modelsCollection
+     *
+     * @return void
+     */
+    protected function applyOrderByClauses(Collection &$modelsCollection)
+    {
+        if (! empty($this->orderBys) && ! $modelsCollection->isEmpty()) {
+            foreach ($this->orderBys as $orders) {
+                $modelsCollection = $modelsCollection->sortBy(
+                    $orders['column'],
+                    SORT_REGULAR,
+                    $orders['direction'] === 'desc'
+                );
+            }
+        }
+    }
+
+    /**
+     * Apply the "select" clauses on the collection.
+     *
+     * @param $modelsCollection
+     *
+     * @return void
+     */
+    protected function applySelectClauses(Collection &$modelsCollection)
+    {
+        if (! empty($this->selects) && $this->selects !== ['*'] && ! $modelsCollection->isEmpty()) {
+            $selectCollection = new Collection();
+            $modelsCollection->each(function($model) use ($selectCollection) {
+                $selectCollection->push(collect($model->toArray())->only(array_unique($this->selects)));
+            });
+            $modelsCollection = $selectCollection;
+        }
     }
 
     /**
@@ -321,88 +396,9 @@ trait BuilderOverride
     }
 
     /**
-     * Apply the "where" clauses on the collection.
+     * Load all of the models from the json file in the "modelsFromJson" variable.
      *
-     * @param $modelsCollection
-     *
-     * @return void
+     * @return Collection
      */
-    protected function applyWhereClauses(Collection &$modelsCollection)
-    {
-        if (! empty($this->wheres) && ! $modelsCollection->isEmpty()) {
-            foreach ($this->wheres as $where) {
-                $modelsCollection = $modelsCollection->where($where['column'], $where['operator'], $where['value']);
-            }
-        }
-    }
-
-    /**
-     * Apply the "whereIn" clauses on the collection.
-     *
-     * @param $modelsCollection
-     *
-     * @return void
-     */
-    protected function applyWhereInClauses(Collection &$modelsCollection)
-    {
-        if (! empty($this->whereIns) && ! $modelsCollection->isEmpty()) {
-            foreach ($this->whereIns as $whereIn) {
-                $modelsCollection = $modelsCollection->whereIn($whereIn['column'], $whereIn['values']);
-            }
-        }
-    }
-
-    /**
-     * Apply the "whereNotIn" clauses on the collection.
-     *
-     * @param $modelsCollection
-     *
-     * @return void
-     */
-    protected function applyWhereNotInClauses(Collection &$modelsCollection)
-    {
-        if (! empty($this->whereNotIns) && ! $modelsCollection->isEmpty()) {
-            foreach ($this->whereNotIns as $whereNotIn) {
-                $modelsCollection = $modelsCollection->whereNotIn($whereNotIn['column'], $whereNotIn['values']);
-            }
-        }
-    }
-
-    /**
-     * Apply the "orderBy" clauses on the collection.
-     *
-     * @param $modelsCollection
-     *
-     * @return void
-     */
-    protected function applyOrderByClauses(Collection &$modelsCollection)
-    {
-        if (! empty($this->orderBys) && ! $modelsCollection->isEmpty()) {
-            foreach ($this->orderBys as $orders) {
-                $modelsCollection = $modelsCollection->sortBy(
-                    $orders['column'],
-                    SORT_REGULAR,
-                    $orders['direction'] === 'desc'
-                );
-            }
-        }
-    }
-
-    /**
-     * Apply the "select" clauses on the collection.
-     *
-     * @param $modelsCollection
-     *
-     * @return void
-     */
-    protected function applySelectClauses(Collection &$modelsCollection)
-    {
-        if (! empty($this->selects) && $this->selects !== ['*'] && ! $modelsCollection->isEmpty()) {
-            $selectCollection = new Collection();
-            $modelsCollection->each(function($model) use ($selectCollection) {
-                $selectCollection->push(collect($model->toArray())->only(array_unique($this->selects)));
-            });
-            $modelsCollection = $selectCollection;
-        }
-    }
+    abstract protected function loadModelsFromJson();
 }

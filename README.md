@@ -102,6 +102,7 @@ However, if you want to add a method for your personal needs, do not hesitate to
 - [save()](https://laravel.com/api/5.0/Illuminate/Database/Eloquent/Model.html#method_save)
 - [update()](https://laravel.com/api/5.0/Illuminate/Database/Eloquent/Model.html#method_update)
 - [all()](https://laravel.com/api/5.0/Illuminate/Database/Eloquent/Model.html#method_all)
+- [delete()](https://laravel.com/api/5.0/Illuminate/Database/Eloquent/Model.html#method_delete)
 
 ### Usable Illuminate\Database\Query\Builder methods
 - [get()](https://laravel.com/api/5.0/Illuminate/Database/Query/Builder.html#method_get)
