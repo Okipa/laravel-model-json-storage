@@ -8,6 +8,9 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/Okipa/laravel-model-json-storage/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Okipa/laravel-model-json-storage/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Okipa/laravel-model-json-storage/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Okipa/laravel-model-json-storage/?branch=master)
 
+**:warning: This package has been abandonned :warning:**  
+Do not hesitate to contact me if you want to make it evolve and to maintain it.
+
 Storing your models in a json file rather than in database (single or few lines recording) can be a good option.  
 This package saves you to create a table for a ridiculous amount of lines, improves the data recovery performances, and allows you to store and access to your models from a json files as you would do it in database.
 
